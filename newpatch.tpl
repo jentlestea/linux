@@ -1,48 +1,37 @@
 {
 	product => "Patches",
-	component => "Unkown",
+	component => "Network",
 	version => "unspecified",
-	summary => 'Revert "irqbypass: do not start cons/prod when failed connect"',
-	description => 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=51484429c6108154aba25b97b2e83097a6487e35
+	summary => 'neighbour: allow NUD_NOARP entries to be forced GCed',
+	description => 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=ddf088d7aaaaacfc836104f2e632b29b1d383cfc
 
-commit 51484429c6108154aba25b97b2e83097a6487e35
-Author: Zhu Lingshan <lingshan.zhu@intel.com>
-Date:   Sat May 8 15:11:52 2021 +0800
+commit ddf088d7aaaaacfc836104f2e632b29b1d383cfc
+Author: David Ahern <dsahern@kernel.org>
+Date:   Mon Jun 7 11:35:30 2021 -0600
 
-    Revert "irqbypass: do not start cons/prod when failed connect"
+    neighbour: allow NUD_NOARP entries to be forced GCed
     
-    commit e44b49f623c77bee7451f1a82ccfb969c1028ae2 upstream.
+    commit 7a6b1ab7475fd6478eeaf5c9d1163e7a18125c8f upstream.
     
-    This reverts commit a979a6aa009f3c99689432e0cdb5402a4463fb88.
+    IFF_POINTOPOINT interfaces use NUD_NOARP entries for IPv6. Its possible to
+    fill up the neighbour table with enough entries that it will overflow for
+    valid connections after that.
     
-    The reverted commit may cause VM freeze on arm64 with GICv4,
-    where stopping a consumer is implemented by suspending the VM.
-    Should the connect fail, the VM will not be resumed, which
-    is a bit of a problem.
+    This behaviour is more prevalent after commit 58956317c8de ("neighbor:
+    Improve garbage collection") is applied, as it prevents removal from
+    entries that are not NUD_FAILED, unless they are more than 5s old.
     
-    It also erroneously calls the producer destructor unconditionally,
-    which is unexpected.
-    
-    Reported-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-    Suggested-by: Marc Zyngier <maz@kernel.org>
-    Acked-by: Jason Wang <jasowang@redhat.com>
-    Acked-by: Michael S. Tsirkin <mst@redhat.com>
-    Reviewed-by: Eric Auger <eric.auger@redhat.com>
-    Tested-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-    Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-    [maz: tags and cc-stable, commit message update]
-    Signed-off-by: Marc Zyngier <maz@kernel.org>
-    Fixes: a979a6aa009f ("irqbypass: do not start cons/prod when failed connect")
-    Link: https://lore.kernel.org/r/3a2c66d6-6ca0-8478-d24b-61e8e3241b20@hisilicon.com
-    Link: https://lore.kernel.org/r/20210508071152.722425-1-lingshan.zhu@intel.com
-    Cc: stable@vger.kernel.org
+    Fixes: 58956317c8de (neighbor: Improve garbage collection)
+    Reported-by: Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
+    Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+    Signed-off-by: David Ahern <dsahern@kernel.org>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
- virt/lib/irqbypass.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ net/core/neighbour.c | 1 +
+ 1 file changed, 1 insertion(+)
 ',
 
-	cf_upstream_commit => "51484429c6108154aba25b97b2e83097a6487e35",
-	status_whiteboard => "",
+	cf_upstream_commit => "ddf088d7aaaaacfc836104f2e632b29b1d383cfc",
 	};
 	
